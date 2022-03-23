@@ -1,0 +1,50 @@
+title Pizza Ordering Software
+
+participant Pizza Shop
+participant User
+participant Log in UI
+participant Search UI
+participant Cart
+participant Database(pizza/customer)
+participant Payment Gateway
+participant Debit card
+participant Mkash
+participant Order
+participant Notification
+
+alt [if pizza shop not registered]
+Pizza Shop->Log in UI:view registration page
+activate Log in UI
+Log in UI->Database(pizza/customer): provide name, type, specialty, size, price, offer
+activate Database(pizza/customer)
+Database(pizza/customer)-->Log in UI: registration complete
+deactivate Database(pizza/customer)
+deactivate Log in UI
+else [Pizza shop registered]
+Pizza Shop->Log in UI: Can view detatils
+end 
+loop 
+User->Log in UI: user logs in
+Log in UI->Search UI:Search a pizza
+Search UI->Database(pizza/customer): Fetching the searched pizza from database
+Database(pizza/customer)-->Search UI:Retrieving the pizza list
+Search UI-->Log in UI: Pizza list displayed
+User->Search UI: Add Pizza
+Search UI->Cart: Pizza added to the cart
+end 
+alt [if not registered user]
+Cart->Payment Gateway: add delivery address,\nchoose payment options
+opt 
+Payment Gateway->Debit card: provide name, card\nnumber expiry date
+Debit card->Order: Order Confirmed/placed
+Payment Gateway->Mkash: provide name, mobile numbe
+Mkash->Order: Order confirmed/placed
+end 
+else [registered user]
+Cart->Database(pizza/customer): Fetch delivery address\n and payment details
+Database(pizza/customer)->Order: Confirm order
+end
+opt 
+Order->Notification: Order placed
+Notification-->Pizza Shop: Order placed by the customer 
+end 
